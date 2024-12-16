@@ -1,11 +1,20 @@
-# Raspberry Pi Pico: MIDI demo.
+# pico-patchboard
 
-This is [the MIDI example from Tinyusb][tinymidi], tweaked and configured such that it'll compile on a Raspberry Pi Pico out of the box.
+virtual patchboard implemented with a RP2040.
 
-It uses a highly similar CMake configuration to the [Raspberry Pi Examples][examples], so should be compilable in a very similar way: I'm just cribbing from the ["Getting started with Raspberry Pi Pico" document][picostart].
+![picture of my patchboard, which is a 5x5 multicolored grid of banana plugs installed in a small pelican case.](patchboard.jpg)
 
-When compiled successfully, the Pico will appear as a USB MIDI Device, emitting a stream of note data. You can connect this to a software synthesizer, or view it in a MIDI monitor tool to confirm success.
+this software is customized for my patchboard, which has 5 outputs on each side of the patchboard (yellow and black columns) and a 3x5 grid of inputs (red, green, and blue columns).
 
-[tinymidi]: https://github.com/raspberrypi/tinyusb/tree/pico/examples/device/midi_test/src
-[examples]: https://github.com/raspberrypi/pico-examples/
-[picostart]: https://datasheets.raspberrypi.org/pico/getting-started-with-pico.pdf
+when an input is patched to an output, a "key down" midi event is sent from the device with a pitch equal to the source index and a velocity equal to the destination index. likewise, the "key up" event is used to communicate a disconnect event. i have not currently implemented debouncing so many up/down events may be sent when removing or inserting patch cables.
+
+# compilation
+
+first, build the UF2 file:
+
+```shell
+$ cmake .
+$ make
+```
+
+then while the RP2040 is in `BOOTSEL` mode (accessed by holding the `BOOTSEL` button while the device is being plugged in), copy `patchboard.uf2` to the root of the storage device. it will immediately reboot and load the software.
