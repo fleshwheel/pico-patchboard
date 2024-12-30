@@ -18,21 +18,23 @@ const uint LED_PIN = PICO_DEFAULT_LED_PIN;
 void led_blinking_task(void);
 void midi_task(void);
 
-uint8_t OUTPUT_PINS[10] = { 0, 1, 2, 3, 4, 21, 22, 26, 27, 28 };
-uint8_t INPUT_PINS[15] = { 5, 6, 7, 8, 9,
+uint8_t OUTPUT_PINS[5] = { 0, 1, 2, 3, 4 };
+uint8_t INPUT_PINS[20] = { 5, 6, 7, 8, 9,
 			   10, 11, 12, 13, 14,
-			   16, 17, 18, 19, 20 };
+			   16, 17, 18, 19, 20,
+			   21, 22, 26, 27, 28
+};
 
 int main() {
   board_init();
 
-  for (int i = 0; i < 10; i++) {
+  for (int i = 0; i < 5; i++) {
     uint8_t p = OUTPUT_PINS[i];
     gpio_init(p);
     gpio_set_dir(p, GPIO_IN);
   }
 
-  for (int j = 0; j < 15; j++) {
+  for (int j = 0; j < 20; j++) {
     uint8_t p = INPUT_PINS[j];
     gpio_init(p);
     gpio_set_dir(p, GPIO_IN);
@@ -83,7 +85,7 @@ void tud_resume_cb(void)
 // MIDI Task
 //--------------------------------------------------------------------+
 
-int matrix[10][15];
+int matrix[5][20];
 
 
 void send_midi(uint8_t status, uint8_t data1, uint8_t data2) {
@@ -97,12 +99,12 @@ void send_midi(uint8_t status, uint8_t data1, uint8_t data2) {
 
 bool led_state = true;
 void midi_task(void) {
-  for (uint8_t i = 0; i < 10; i++) {
+  for (uint8_t i = 0; i < 5; i++) {
     uint8_t p_out = OUTPUT_PINS[i];
     gpio_set_dir(p_out, GPIO_OUT);
     gpio_put(p_out, 1);
-    sleep_us(15);
-    for (uint8_t j = 0; j < 15; j++) {
+    sleep_us(30);
+    for (uint8_t j = 0; j < 20; j++) {
       uint8_t p_in = INPUT_PINS[j];
       uint8_t value = gpio_get(p_in);
 
@@ -120,7 +122,7 @@ void midi_task(void) {
       matrix[i][j] = value;
     }
     gpio_set_dir(p_out, GPIO_IN);
-    sleep_us(15);
+    sleep_us(30);
   }
 }
 
